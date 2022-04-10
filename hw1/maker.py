@@ -10,10 +10,10 @@ def createFolder(directory):
 
 if __name__ == '__main__':
     # Directory to save file
-    dir = "./test4/"
+    dir = "./test5/"
     createFolder(dir)
 
-    n = 10**7
+    n = 10**8
     i = random.randint(0, n)
 
     with open(dir+"input.txt", "w") as f:

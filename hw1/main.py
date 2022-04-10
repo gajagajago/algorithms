@@ -94,7 +94,6 @@ def deterministic_select(li, p, r, i):
 
     if n <= size:
         insertion_sort(li, p, r)
-        print("sorted li: ", li)
         return li[p + i - 1]
 
     # make groups
@@ -105,21 +104,13 @@ def deterministic_select(li, p, r, i):
     # find medians
     medians = [deterministic_select(grp, 0, len(grp) - 1, (len(grp) + 1) // 2) for grp in grps]
 
-    print("grps: ", grps)
-    print("medians: ", medians)
-
     # find M of medians
     M = deterministic_select(medians, 0, len(medians) - 1, (len(medians) + 1) // 2)
-    print("M: ", M)
 
     q = partition_with_pivot(li, p, r, M)
-    print("li after partition: ", li)
-    print("q[%d]" % q)
 
     k = q - p + 1
 
-    print("k: %d i: %d" % (k, i))
-    print("p: %d r: %d" % (p, r))
     if i < k:
         return deterministic_select(li, p, q - 1, i)
     elif i > k:
@@ -128,10 +119,25 @@ def deterministic_select(li, p, r, i):
         return li[q]
 
 
+def checker(comparison, li, n, i, out):
+    """
+    Compares the correctness of the algorithm
+    :param comparison: algorithm to compare upon. "random" or "deter"
+    :param li: element list
+    :param n: list length
+    :param i: i-th smallest
+    :param out: output of check target algorithm
+    :return: comparison result. True or False
+    """
+    el = random_select(li, 0, n-1, i) if comparison == "random" else deterministic_select(li, 0, n-1, i)
+
+    return out == el
+
+
 if __name__ == '__main__':
     # Source directory of input file
     # Output files will also be saved here
-    dir = "./test4/"
+    dir = "./test3/"
 
     # read input
     with open(dir + "input.txt", "r") as f_in:
@@ -150,6 +156,7 @@ if __name__ == '__main__':
         f_random_out.write("{}\n{}".format(el, t_end - t_start))
 
     # check random_select
+    print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
 
     # deter_select
     li_deter = li[:]
@@ -160,4 +167,5 @@ if __name__ == '__main__':
     with open(dir + "deter.txt", "w") as f_deter_out:
         f_deter_out.write("{}\n{}".format(el, t_end - t_start))
 
-    # check random_select
+    # check deter_select
+    print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")
