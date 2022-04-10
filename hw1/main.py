@@ -1,17 +1,18 @@
 import time
 
-def insertion_sort(li):
-
+def insertion_sort(li, p, r):
     '''
     Sort list in ascending order
     :param li: list to be sorted
+    :param p: sort starting index
+    :param r: sort end index
     '''
-    n = len(li)
-    for i in range(1, n):
+    # n = len(li)
+    for i in range(p+1, r+1):
         j = i-1
         x = li[i]
 
-        while j >= 0 and x < li[j]:
+        while j >= p and x < li[j]:
             li[j+1] = li[j]
             j -= 1
 
