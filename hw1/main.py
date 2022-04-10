@@ -16,20 +16,21 @@ def insertion_sort(li):
 
         li[j+1] = x
 
-def partition(li, p ,r):
+def partition(li, p ,r, pi):
     '''
-    Partition list based on seed element
-    Seed will be li[r] for this algorithm
+    Partition list based on pivot element
     :param li: partition target list
     :param p: start index of li
     :param r: end index of li
-    :return: final index of seed
+    :param pi: pivot index of li
+    :return: final index of pivot
     '''
-    seed = li[r]
+    li[pi], li[r] = li[r], li[pi]
+    pivot = li[r]
     i = p-1
 
     for j in range(p, r):
-        if li[j] < seed:
+        if li[j] < pivot:
             i += 1
             li[i], li[j] = li[j], li[i]
     li[i+1], li[r] = li[r], li[i+1]
@@ -48,7 +49,7 @@ def random_select(li, p, r, i):
     if p == r:
         return li[p]
 
-    q = partition(li, p, r)
+    q = partition(li, p, r, r) # last element as pivot
     k = q-p+1
 
     if i < k:
