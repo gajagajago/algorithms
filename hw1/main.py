@@ -1,5 +1,21 @@
 import time
 
+def insertion_sort(li):
+    '''
+    Sort list in ascending order
+    :param li: list to be sorted
+    '''
+    n = len(li)
+    for i in range(1, n):
+        j = i-1
+        x = li[i]
+
+        while j >= 0 and x < li[j]:
+            li[j+1] = li[j]
+            j -= 1
+
+        li[j+1] = x
+
 def partition(li, p ,r):
     '''
     Partition list based on seed element
