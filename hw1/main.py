@@ -167,10 +167,6 @@ if __name__ == '__main__':
     with open(dir + "random.txt", "w") as f_random_out:
         f_random_out.write("{}\n{}".format(el, t_end - t_start))
 
-    # check random_select
-    if do_check:
-        print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
-
     # deter_select
     li_deter = li[:]
     t_start = time.time()
@@ -180,8 +176,18 @@ if __name__ == '__main__':
     with open(dir + "deter.txt", "w") as f_deter_out:
         f_deter_out.write("{}\n{}".format(el, t_end - t_start))
 
-    # check deter_select
+    # checker
     if do_check:
-        print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")
+        with open(dir + "result.txt", "w") as f_result:
+            # check random_select
+            rand_res = "[Random Select] " + "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG"
+            print(rand_res)
+            f_result.write(rand_res)
+            f_result.write("\n")
+            # check deter_select
+            deter_res = "[Deterministic Select] " + "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG"
+            print(deter_res)
+            f_result.write(deter_res)
+
 
     print("DONE -- Output files saved to ", dir)
