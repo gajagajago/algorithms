@@ -21,7 +21,7 @@ def insertion_sort(li, p, r):
 
 def partition(li, p, r, pi):
     """
-    Partition list based on pivot element
+    Partition list based on pivot index
     :param li: partition target list
     :param p: start index of li
     :param r: end index of li
@@ -47,7 +47,7 @@ def partition_with_pivot(li, p, r, pivot):
     :param li: partition target list
     :param p: start index of li
     :param r: end index of li
-    :param pivot: pivot
+    :param pivot: pivot element
     :return: final index of pivot
     """
     pi = li.index(pivot, p, r + 1)
@@ -57,7 +57,7 @@ def partition_with_pivot(li, p, r, pivot):
 
 def random_select(li, p, r, i):
     """
-    Finds i-th smallest element of li in average O(n) time
+    Finds i-th smallest element of list in average O(n) time
     :param li: element list
     :param p: start index of li
     :param r: end index of li
@@ -86,9 +86,7 @@ def deterministic_select(li, p, r, i):
     :param i: i-th smallest
     """
 
-    # make copy of li
     li = li[:]
-
     size = 5
     n = r - p + 1
 
@@ -137,7 +135,21 @@ def checker(comparison, li, n, i, out):
 if __name__ == '__main__':
     # Source directory of input file
     # Output files will also be saved here
-    dir = "test10**6/"
+    dir = input("Directory of input file: ")
+    if not dir[-1] == "/":
+        dir += "/"
+
+    # Whether checker will run after algorithm execution
+    do_check = None
+
+    while do_check is None:
+        c = input("Run checkers? [Y/N]: ")
+        if c == "Y":
+            do_check = True
+        elif c == "N":
+            do_check = False
+        else:
+            continue
 
     # read input
     with open(dir + "input.txt", "r") as f_in:
@@ -156,7 +168,8 @@ if __name__ == '__main__':
         f_random_out.write("{}\n{}".format(el, t_end - t_start))
 
     # check random_select
-    # print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
+    if do_check:
+        print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
 
     # deter_select
     li_deter = li[:]
@@ -168,4 +181,7 @@ if __name__ == '__main__':
         f_deter_out.write("{}\n{}".format(el, t_end - t_start))
 
     # check deter_select
-    # print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")
+    if do_check:
+        print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")
+
+    print("DONE -- Output files saved to ", dir)

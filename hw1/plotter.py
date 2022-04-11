@@ -25,8 +25,8 @@ def plot2(x1_fig, y1_fig, x2_fig, y2_fig, x1_label, x2_label):
     plt.ylabel("Time(sec)",fontsize=20)
     plt.legend()
     plt.title("Time for Selection Algorithm", fontsize=20)
-    plt.show()
 
+    plt.savefig("result.png", bbox_inches="tight")
 
 if __name__ == '__main__':
     """
