@@ -137,7 +137,7 @@ def checker(comparison, li, n, i, out):
 if __name__ == '__main__':
     # Source directory of input file
     # Output files will also be saved here
-    dir = "./test3/"
+    dir = "test10**6/"
 
     # read input
     with open(dir + "input.txt", "r") as f_in:
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         f_random_out.write("{}\n{}".format(el, t_end - t_start))
 
     # check random_select
-    print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
+    # print("[Random Select] ", "SUCCESS" if checker("deter", li[:], n, i, el) else "WRONG")
 
     # deter_select
     li_deter = li[:]
@@ -168,4 +168,4 @@ if __name__ == '__main__':
         f_deter_out.write("{}\n{}".format(el, t_end - t_start))
 
     # check deter_select
-    print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")
+    # print("[Deterministic Select] ", "SUCCESS" if checker("random", li[:], n, i, el) else "WRONG")

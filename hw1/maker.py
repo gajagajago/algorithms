@@ -8,19 +8,23 @@ def createFolder(directory):
     except OSError:
         print('Error: Creating directory. ' + directory)
 
-if __name__ == '__main__':
-    # Directory to save file
-    dir = "./test5/"
+def makeInputs():
+    dir = input("Directory to save: ")
+    n = int(input("Number of elements: "))
+
     createFolder(dir)
 
-    n = 10**8
+    max_int = 10**3
     i = random.randint(0, n)
 
     with open(dir+"input.txt", "w") as f:
         f.write("{}\n".format(n))
 
         for j in range(n):
-            f.write("{}".format(random.randint(0, n)))
+            f.write("{}".format(random.randint(0, max_int)))
             f.write(" ") if j != n-1 else f.write("\n")
 
         f.write("{}".format(i))
+
+if __name__ == '__main__':
+    makeInputs()
