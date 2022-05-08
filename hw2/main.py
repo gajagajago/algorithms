@@ -89,14 +89,18 @@ class RBTree:
 
         return new
 
+    def __updateRoot(self, x: RBNode):
+        while x.p is not None:
+            x = x.p
+
+        self.root = x
+
     def __leftRotate(self, p: RBNode):
         x = p.rc
         p2 = p.p
         x.p = p2
 
-        if p is self.root:
-            self.root = x
-        else:
+        if p is not self.root:
             if p == p2.lc:
                 p2.lc = x
             else:
@@ -116,9 +120,7 @@ class RBTree:
         p2 = p.p
         x.p = p2
 
-        if p is self.root:
-            self.root = x
-        else:
+        if p is not self.root:
             if p == p2.lc:
                 p2.lc = x
             else:
@@ -232,6 +234,9 @@ class RBTree:
         if new.color == 'R' and new.p.color == 'R':
             self.__fixTree(new)
 
+        # Update root
+        self.__updateRoot(new)
+
         return 0
 
     # x is black. x is p.lc
@@ -333,6 +338,9 @@ class RBTree:
                     c.fixSize()
                     c = c.p
 
+                # update root
+                self.__updateRoot(x)
+
 
             else: # m == p.rc
                 x = m.rc
@@ -350,6 +358,10 @@ class RBTree:
                 while c is not None:
                     c.fixSize()
                     c = c.p
+
+                # update root
+                self.__updateRoot(x)
+
 
             return val
 
@@ -521,19 +533,18 @@ def deleteTest1():
     for i in li:
         tree.insert(i)
 
-    tree.root.display()
-
     tree.delete(6)
-    tree.root.display()
-    #
-    # tree.delete(2)
-    # tree.root.display()
+
+    if tree.root.val == 7:
+        print('Delete test 1 passed')
+    else:
+        print('Delete test 1 failed')
 
 
 if __name__ == '__main__':
-    # insertTest1()
-    # insertTest2()
-    # selectTest1()
-    # selectTest2()
-    # rankTest1()
+    insertTest1()
+    insertTest2()
+    selectTest1()
+    selectTest2()
+    rankTest1()
     deleteTest1()
