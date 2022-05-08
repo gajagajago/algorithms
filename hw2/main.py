@@ -8,6 +8,17 @@ class RBNode:
         self.color = color  # 'R' OR 'B'
         self.p = self.lc = self.rc = None
 
+    def successor(self):
+        s = self.rc
+
+        if s.val is None:
+            return self
+        else:
+            while s.lc.val is not None:
+                s = s.lc
+
+        return s
+
     def fixSize(self):
         self.size = self.lc.size + self.rc.size + 1
 
@@ -218,6 +229,15 @@ class RBTree:
             self.__fixTree(new)
 
         return 0
+
+    def delete(self, val: int):
+        x = self.get(val)
+
+        if x is None:
+            return 0
+        else:
+            return
+
 
     def __select(self, x: RBNode, i: int):
         r = x.lc.size + 1
