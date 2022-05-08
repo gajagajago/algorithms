@@ -19,8 +19,12 @@ class RBNode:
 
         return s
 
+    def __isNil(self):
+        return self.size == 0
+
     def fixSize(self):
-        self.size = self.lc.size + self.rc.size + 1
+        if not self.__isNil():
+            self.size = self.lc.size + self.rc.size + 1
 
     def display(self):
         lines, *_ = self.__display_aux()
@@ -249,6 +253,9 @@ class RBTree:
         elif pslr == ('R', 'B', 'R', 'B') or pslr == ('B', 'B', 'R', 'B'):
             self.__rightRotate(s)
             l.color, s.color = s.color, l.color
+            # s, l fix size
+            s.fixSize()
+            l.fixSize()
             self.__deleteL(x)
         elif pslr == ('B', 'B', 'B', 'B'):
             s.color = 'R'
@@ -281,6 +288,9 @@ class RBTree:
         elif pslr == ('R', 'B', 'B', 'R') or pslr == ('B', 'B', 'B', 'R'):
             self.__leftRotate(s)
             r.color, s.color = s.color, r.color
+            # s, r fix size
+            s.fixSize()
+            r.fixSize()
             self.__deleteR(x)
         elif pslr == ('B', 'B', 'B', 'B'):
             s.color = 'R'
@@ -318,6 +328,12 @@ class RBTree:
                 if x.color == 'R':
                     x.color == 'B'
 
+                c = x
+                while c is not None:
+                    c.fixSize()
+                    c = c.p
+
+
             else: # m == p.rc
                 x = m.rc
 
@@ -329,6 +345,11 @@ class RBTree:
 
                 if x.color == 'R':
                     x.color == 'B'
+
+                c = x
+                while c is not None:
+                    c.fixSize()
+                    c = c.p
 
             return val
 
