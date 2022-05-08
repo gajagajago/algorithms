@@ -230,13 +230,107 @@ class RBTree:
 
         return 0
 
-    def delete(self, val: int):
-        x = self.get(val)
+    # x is black. x is p.lc
+    def __deleteL(self, x: RBNode):
+        p = x.p
+        s = p.rc
+        l = s.lc
+        r = s.rc
 
-        if x is None:
+        pslr = p.color, s.color, l.color, r.color
+
+        if pslr == ('R', 'B', 'B', 'B'):
+            p.color, s.color = s.color, p.color
+        elif pslr == ('R', 'B', 'R', 'R') or pslr == ('R', 'B', 'B', 'R') \
+                or pslr == ('B', 'B', 'R', 'R') or pslr == ('B', 'B', 'B', 'R'):
+            self.__leftRotate(p)
+            p.color, s.color = s.color, p.color
+            r.color = 'B'
+        elif pslr == ('R', 'B', 'R', 'B') or pslr == ('B', 'B', 'R', 'B'):
+            self.__rightRotate(s)
+            l.color, s.color = s.color, l.color
+            self.__deleteL(x)
+        elif pslr == ('B', 'B', 'B', 'B'):
+            s.color = 'R'
+            p2 = p.p
+            if p == p2.lc:
+                self.__deleteL(p)
+            else:
+                self.__deleteR(p)
+        else: # (BRBB)
+            self.__leftRotate(p)
+            p.color, s.color = s.color, p.color
+            self.__deleteL(x)
+
+    # x is black. x is p.rc
+    def __deleteR(self, x: RBNode):
+        p = x.p
+        s = p.lc
+        l = s.lc
+        r = s.rc
+
+        pslr = p.color, s.color, l.color, r.color
+
+        if pslr == ('R', 'B', 'B', 'B'):
+            p.color, s.color = s.color, p.color
+        elif pslr == ('R', 'B', 'R', 'R') or pslr == ('R', 'B', 'R', 'B') \
+                or pslr == ('B', 'B', 'R', 'R') or pslr == ('B', 'B', 'R', 'B'):
+            self.__rightRotate(p)
+            p.color, s.color = s.color, p.color
+            l.color = 'B'
+        elif pslr == ('R', 'B', 'B', 'R') or pslr == ('B', 'B', 'B', 'R'):
+            self.__leftRotate(s)
+            r.color, s.color = s.color, r.color
+            self.__deleteR(x)
+        elif pslr == ('B', 'B', 'B', 'B'):
+            s.color = 'R'
+            p2 = p.p
+            if p == p2.lc:
+                self.__deleteL(p)
+            else:
+                self.__deleteR(p)
+        else: # (BRBB)
+            self.__rightRotate(p)
+            p.color, s.color = s.color, p.color
+            self.__deleteR(x)
+
+
+
+    def delete(self, val: int):
+        target = self.get(val)
+
+        if target is None:
             return 0
         else:
-            return
+            m = target.successor()
+            target.val, m.val = m.val, target.val
+            p = m.p
+
+            if m == p.lc:
+                x = m.rc
+
+                p.lc = x
+                x.p = p
+
+                if m.color == 'B' and x.color == 'B':
+                    self.__deleteL(x)
+
+                if x.color == 'R':
+                    x.color == 'B'
+
+            else: # m == p.rc
+                x = m.rc
+
+                p.rc = x
+                x.p = p
+
+                if m.color == 'B' and x.color == 'B':
+                    self.__deleteR(x)
+
+                if x.color == 'R':
+                    x.color == 'B'
+
+            return val
 
 
     def __select(self, x: RBNode, i: int):
@@ -398,10 +492,14 @@ def rankTest1():
     else:
         print('Rank test 1 failed')
 
+def deleteTest1():
+    return
+
 
 if __name__ == '__main__':
-    insertTest1()
-    insertTest2()
-    selectTest1()
-    selectTest2()
-    rankTest1()
+    # insertTest1()
+    # insertTest2()
+    # selectTest1()
+    # selectTest2()
+    # rankTest1()
+    deleteTest1()
