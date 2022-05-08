@@ -197,14 +197,14 @@ class RBTree:
             c = c.p
             c.size = c.size + 1
 
+        # self.root.display()
         # Fix tree
         if new.color == 'R' and new.p.color == 'R':
             self.__fixTree(new)
 
         return 0
 
-
-if __name__ == '__main__':
+def test1():
     # Test 1 Insertion
     # 1-1 p == p2.lc
     # 1-1-1
@@ -213,14 +213,12 @@ if __name__ == '__main__':
     tree.insert(5)
     tree.insert(3)
     tree.insert(7)
-
     tree.insert(2)
     tree.insert(4)
-
     tree.insert(1)
 
     x = tree.get(1)
-    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.p.color == 'B' and x.p.p.rc.color == 'B':
+    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.rc.color == 'B':
         print('Test 1-1-1 passed')
     else:
         print('Test 1-1-1 failed')
@@ -233,31 +231,29 @@ if __name__ == '__main__':
     tree.insert(7)
 
     tree.insert(2)
-    tree.insert(5)
-
     tree.insert(3)
 
     x = tree.get(3)
-    if x.p.color == 'B' and x.p.rc.color == 'R':
+    if x.p.color == 'B' and x.lc.color == 'R' and x.rc.color == 'R' and x.rc.rc.color == 'B':
         print('Test 1-1-2 passed')
     else:
         print('Test 1-1-2 failed')
 
+def test2():
+    # Test 2 Insertion
     # 1-2 p == p2.rc
     # 1-2-1
     tree = RBTree()
 
     tree.insert(5)
     tree.insert(3)
-    tree.insert(7)
-
-    tree.insert(6)
     tree.insert(8)
-
+    tree.insert(7)
     tree.insert(9)
+    tree.insert(6)
 
-    x = tree.get(9)
-    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.p.color == 'B' and x.p.p.lc.color == 'B':
+    x = tree.get(6)
+    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.lc.color == 'B':
         print('Test 1-2-1 passed')
     else:
         print('Test 1-2-1 failed')
@@ -265,21 +261,22 @@ if __name__ == '__main__':
     # 1-1-2
     tree = RBTree()
 
-    tree.insert(5)
-    tree.insert(3)
-    tree.insert(8)
-
     tree.insert(6)
-    tree.insert(10)
+    tree.insert(4)
+    tree.insert(7)
 
     tree.insert(9)
+    tree.insert(8)
 
-    x = tree.get(9)
-    if x.p.color == 'B' and x.p.lc.color == 'R':
+    x = tree.get(8)
+    if x.p.color == 'B' and x.lc.color == 'R' and x.rc.color == 'R' and x.lc.lc.color == 'B':
         print('Test 1-2-2 passed')
     else:
         print('Test 1-2-2 failed')
 
+if __name__ == '__main__':
+    test1()
+    test2()
     # Test 2 Left rotate
     # tree.insert(5)
     # tree.insert(3)
