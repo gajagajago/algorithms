@@ -295,13 +295,13 @@ class RBTree:
             self.__deleteR(x)
 
 
-
     def delete(self, val: int):
         target = self.get(val)
 
         if target is None:
             return 0
         else:
+            self.nr = self.nr - 1
             m = target.successor()
             target.val, m.val = m.val, target.val
             p = m.p
@@ -493,7 +493,20 @@ def rankTest1():
         print('Rank test 1 failed')
 
 def deleteTest1():
-    return
+    tree = RBTree()
+
+    li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
+
+    for i in li:
+        tree.insert(i)
+
+    tree.root.display()
+
+    tree.delete(6)
+    tree.root.display()
+    #
+    # tree.delete(2)
+    # tree.root.display()
 
 
 if __name__ == '__main__':
