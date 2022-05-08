@@ -63,6 +63,7 @@ class RBTree:
     def __init__(self):
         self.nil = RBNode(None, 0, 'B')  # Assume nil node can't track its parent
         self.root = self.nil
+        self.nr = 0
 
     def __makeNew(self, val: int):
         new = RBNode(val, 1, 'R')
@@ -73,12 +74,16 @@ class RBTree:
     def __leftRotate(self, p: RBNode):
         x = p.rc
         p2 = p.p
-
         x.p = p2
-        if p == p2.lc:
-            p2.lc = x
+
+        if p is self.root:
+            self.root = x
         else:
-            p2.rc = x
+            if p == p2.lc:
+                p2.lc = x
+            else:
+                p2.rc = x
+
         p.rc = x.lc
         x.lc.p = p
         p.p = x
@@ -91,12 +96,16 @@ class RBTree:
     def __rightRotate(self, p: RBNode):
         x = p.lc
         p2 = p.p
-
         x.p = p2
-        if p == p2.lc:
-            p2.lc = x
+
+        if p is self.root:
+            self.root = x
         else:
-            p2.rc = x
+            if p == p2.lc:
+                p2.lc = x
+            else:
+                p2.rc = x
+
         p.lc = x.rc
         x.rc.p = p
         p.p = x
@@ -125,7 +134,7 @@ class RBTree:
                         self.__fixTree(p2)
 
             # case 2
-            else: # s.color == 'B':
+            else:  # s.color == 'B':
                 if x == p.rc:
                     self.__leftRotate(p)
                     self.__fixTree(p)
@@ -147,7 +156,7 @@ class RBTree:
                         self.__fixTree(p2)
 
             # case 2
-            else: # s.color == 'B':
+            else:  # s.color == 'B':
                 if x == p.lc:
                     self.__rightRotate(p)
                     self.__fixTree(p)
@@ -191,20 +200,39 @@ class RBTree:
         else:
             p.rc = new
 
+        # Adjust nr
+        self.nr = self.nr + 1
+
         # Adjust size
         c = new
         while c.p is not None:
             c = c.p
             c.size = c.size + 1
 
-        # self.root.display()
         # Fix tree
         if new.color == 'R' and new.p.color == 'R':
             self.__fixTree(new)
 
         return 0
 
-def test1():
+    def __select(self, x: RBNode, i: int):
+        r = x.lc.size + 1
+
+        if i == r:
+            return x.val
+        elif i < r:
+            return self.__select(x.lc, i)
+        else:
+            return self.__select(x.rc, i - r)
+
+    def select(self, i: int):
+        if self.nr < i:
+            return 0
+        else:
+            return self.__select(self.root, i)
+
+
+def insertTest1():
     # Test 1 Insertion
     # 1-1 p == p2.lc
     # 1-1-1
@@ -239,7 +267,8 @@ def test1():
     else:
         print('Test 1-1-2 failed')
 
-def test2():
+
+def insertTest2():
     # Test 2 Insertion
     # 1-2 p == p2.rc
     # 1-2-1
@@ -274,15 +303,45 @@ def test2():
     else:
         print('Test 1-2-2 failed')
 
+
+def selectTest1():
+    tree = RBTree()
+
+    tree.insert(1)
+    tree.insert(2)
+    tree.insert(3)
+    tree.insert(4)
+    tree.insert(5)
+
+    x = tree.select(5)
+
+    if x == 5:
+        print('Select test 1 passed')
+    else:
+        print('Select test 1 failed')
+
+def selectTest2():
+    tree = RBTree()
+    ith = 5
+
+    li = [5,2,4,7,6,8,9,1,10,11,3]
+
+    for i in li:
+        tree.insert(i)
+
+    li.sort()
+    ithItem = li[ith-1]
+
+    x = tree.select(ith)
+
+    if x == ithItem:
+        print('Select test 2 passed')
+    else:
+        print('Select test 2 failed')
+
+
 if __name__ == '__main__':
-    test1()
-    test2()
-    # Test 2 Left rotate
-    # tree.insert(5)
-    # tree.insert(3)
-    # tree.insert(7)
-    #
-    # tree.insert(8)
-    #
-    #
-    # tree.root.display()
+    insertTest1()
+    insertTest2()
+    selectTest1()
+    selectTest2()
