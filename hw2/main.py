@@ -1,3 +1,6 @@
+import random
+
+
 class RBNode:
     def __init__(self, val: int, size: int, color: str):
         self.val = val
@@ -176,6 +179,7 @@ class RBTree:
                 return c
 
         print('RBNode with val %s not exist' % val)
+        return None
 
     def insert(self, val: int):
         new = self.__makeNew(val)
@@ -230,6 +234,22 @@ class RBTree:
             return 0
         else:
             return self.__select(self.root, i)
+
+    def rank(self, val: int):
+        x = self.get(val)
+
+        if x is None:
+            return 0
+        else:
+            r = x.lc.size + 1
+            y = x
+
+            while y is not self.root:
+                if y == y.p.rc:
+                    r = r + y.p.lc.size + 1
+                y = y.p
+
+            return r
 
 
 def insertTest1():
@@ -320,17 +340,18 @@ def selectTest1():
     else:
         print('Select test 1 failed')
 
+
 def selectTest2():
     tree = RBTree()
     ith = 5
 
-    li = [5,2,4,7,6,8,9,1,10,11,3]
+    li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
 
     for i in li:
         tree.insert(i)
 
     li.sort()
-    ithItem = li[ith-1]
+    ithItem = li[ith - 1]
 
     x = tree.select(ith)
 
@@ -340,8 +361,27 @@ def selectTest2():
         print('Select test 2 failed')
 
 
+def rankTest1():
+    tree = RBTree()
+
+    li = [i for i in range(1, 20)]
+    random.shuffle(li)
+
+    for i in li:
+        tree.insert(i)
+
+    random.shuffle(li)
+    r = tree.rank(li[0])
+
+    if r == li[0]:
+        print('Rank test 1 passed')
+    else:
+        print('Rank test 1 failed')
+
+
 if __name__ == '__main__':
     insertTest1()
     insertTest2()
     selectTest1()
     selectTest2()
+    rankTest1()
