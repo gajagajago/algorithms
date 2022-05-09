@@ -1,5 +1,6 @@
 import random
 
+VAL = 100
 
 class RBNode:
     def __init__(self, val: int, size: int, color: str):
@@ -99,8 +100,11 @@ class RBTree:
         x = p.rc
         p2 = p.p
         x.p = p2
+        # if p2 is not self.root:
+        # print("__left rotate: x({})p({})p2({}))".format(x.val, p.val, p2.val))
 
         if p is not self.root:
+            # print("P is not root")
             if p == p2.lc:
                 p2.lc = x
             else:
@@ -114,6 +118,11 @@ class RBTree:
         # do not fix order
         p.fixSize()
         x.fixSize()
+
+        # print("show result __left_rotate")
+        # self.root.display()
+        # if x.p is not None:
+        #     print("x.p = ", x.p.val)
 
     def __rightRotate(self, p: RBNode):
         x = p.lc
@@ -246,6 +255,8 @@ class RBTree:
         l = s.lc
         r = s.rc
 
+        # print("p({})s({})l({})r({})".format(p.val, s.val, l.val, r.val))
+
         pslr = p.color, s.color, l.color, r.color
 
         if pslr == ('R', 'B', 'B', 'B'):
@@ -269,7 +280,7 @@ class RBTree:
                 self.__deleteL(p)
             else:
                 self.__deleteR(p)
-        else: # (BRBB)
+        else:  # (BRBB)
             self.__leftRotate(p)
             p.color, s.color = s.color, p.color
             self.__deleteL(x)
@@ -280,7 +291,9 @@ class RBTree:
         s = p.lc
         l = s.lc
         r = s.rc
-
+        # print("x({})p({})s({}))".format(x.val, p.val, s.val))
+        #
+        # print("p({})s({})l({})r({})".format(p.val, s.val, l.val, r.val))
         pslr = p.color, s.color, l.color, r.color
 
         if pslr == ('R', 'B', 'B', 'B'):
@@ -304,13 +317,13 @@ class RBTree:
                 self.__deleteL(p)
             else:
                 self.__deleteR(p)
-        else: # (BRBB)
+        else:  # (BRBB)
             self.__rightRotate(p)
             p.color, s.color = s.color, p.color
             self.__deleteR(x)
 
-
     def delete(self, val: int):
+        if VAL == val: print("delete val({})".format(val))
         target = self.get(val)
 
         if target is None:
@@ -318,11 +331,14 @@ class RBTree:
         else:
             self.nr = self.nr - 1
             m = target.successor()
+            if VAL == val: print("delete m({}) m.p({})".format(m.val, m.p.val))
+
             target.val, m.val = m.val, target.val
             p = m.p
 
             if m == p.lc:
                 x = m.rc
+                if VAL == val: print("delete x({})".format(x.val))
 
                 p.lc = x
                 x.p = p
@@ -331,7 +347,7 @@ class RBTree:
                     self.__deleteL(x)
 
                 if x.color == 'R':
-                    x.color == 'B'
+                    x.color = 'B'
 
                 c = x
                 while c is not None:
@@ -342,8 +358,9 @@ class RBTree:
                 self.__updateRoot(x)
 
 
-            else: # m == p.rc
-                x = m.rc
+            else:  # m == p.rc
+                x = m.lc
+                if VAL == val: print("delete x({})".format(x.val))
 
                 p.rc = x
                 x.p = p
@@ -352,7 +369,7 @@ class RBTree:
                     self.__deleteR(x)
 
                 if x.color == 'R':
-                    x.color == 'B'
+                    x.color = 'B'
 
                 c = x
                 while c is not None:
@@ -362,9 +379,7 @@ class RBTree:
                 # update root
                 self.__updateRoot(x)
 
-
             return val
-
 
     def __select(self, x: RBNode, i: int):
         r = x.lc.size + 1
@@ -399,131 +414,38 @@ class RBTree:
             return r
 
 
-def insertTest1():
-    # Test 1 Insertion
-    # 1-1 p == p2.lc
-    # 1-1-1
+def test():
     tree = RBTree()
-
-    tree.insert(5)
-    tree.insert(3)
-    tree.insert(7)
-    tree.insert(2)
-    tree.insert(4)
-    tree.insert(1)
-
-    x = tree.get(1)
-    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.rc.color == 'B':
-        print('Test 1-1-1 passed')
-    else:
-        print('Test 1-1-1 failed')
-
-    # 1-1-2
-    tree = RBTree()
-
-    tree.insert(6)
-    tree.insert(4)
-    tree.insert(7)
-
-    tree.insert(2)
-    tree.insert(3)
-
-    x = tree.get(3)
-    if x.p.color == 'B' and x.lc.color == 'R' and x.rc.color == 'R' and x.rc.rc.color == 'B':
-        print('Test 1-1-2 passed')
-    else:
-        print('Test 1-1-2 failed')
-
-
-def insertTest2():
-    # Test 2 Insertion
-    # 1-2 p == p2.rc
-    # 1-2-1
-    tree = RBTree()
-
-    tree.insert(5)
-    tree.insert(3)
-    tree.insert(8)
-    tree.insert(7)
-    tree.insert(9)
-    tree.insert(6)
-
-    x = tree.get(6)
-    if x.p.color == 'B' and x.p.p.color == 'R' and x.p.p.lc.color == 'B':
-        print('Test 1-2-1 passed')
-    else:
-        print('Test 1-2-1 failed')
-
-    # 1-1-2
-    tree = RBTree()
-
-    tree.insert(6)
-    tree.insert(4)
-    tree.insert(7)
-
-    tree.insert(9)
-    tree.insert(8)
-
-    x = tree.get(8)
-    if x.p.color == 'B' and x.lc.color == 'R' and x.rc.color == 'R' and x.lc.lc.color == 'B':
-        print('Test 1-2-2 passed')
-    else:
-        print('Test 1-2-2 failed')
-
-
-def selectTest1():
-    tree = RBTree()
-
-    tree.insert(1)
-    tree.insert(2)
-    tree.insert(3)
-    tree.insert(4)
-    tree.insert(5)
-
-    x = tree.select(5)
-
-    if x == 5:
-        print('Select test 1 passed')
-    else:
-        print('Select test 1 failed')
-
-
-def selectTest2():
-    tree = RBTree()
-    ith = 5
 
     li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
 
     for i in li:
+        print("-------------------------------")
+        print("Insert({})".format(i))
         tree.insert(i)
+        print("ROOT({})".format(tree.root.val))
+        tree.root.display()
+        print("-------------------------------")
 
-    li.sort()
-    ithItem = li[ith - 1]
+    # 문제1
+    # lj = [4,9,5]
+    # for i in lj:
+    #     print("-------------------------------")
+    #     print("Delete({})".format(i))
+    #     tree.delete(i)
+    #     print("ROOT({})".format(tree.root.val))
+    #     tree.root.display()
+    #     print("-------------------------------")
 
-    x = tree.select(ith)
-
-    if x == ithItem:
-        print('Select test 2 passed')
-    else:
-        print('Select test 2 failed')
-
-
-def rankTest1():
-    tree = RBTree()
-
-    li = [i for i in range(1, 20)]
     random.shuffle(li)
 
     for i in li:
-        tree.insert(i)
-
-    random.shuffle(li)
-    r = tree.rank(li[0])
-
-    if r == li[0]:
-        print('Rank test 1 passed')
-    else:
-        print('Rank test 1 failed')
+        print("-------------------------------")
+        print("Delete({})".format(i))
+        tree.delete(i)
+        print("ROOT({})".format(tree.root.val))
+        tree.root.display()
+        print("-------------------------------")
 
 def deleteTest1():
     tree = RBTree()
@@ -540,11 +462,24 @@ def deleteTest1():
     else:
         print('Delete test 1 failed')
 
+    tree.root.display()
+
+    tree.delete(10)
+    tree.root.display()
+
+    # tree.delete(8)
+    # tree.root.display()
+    #
+    # tree.delete(11)
+    # tree.root.display()
+
 
 if __name__ == '__main__':
-    insertTest1()
-    insertTest2()
-    selectTest1()
-    selectTest2()
-    rankTest1()
-    deleteTest1()
+    # insertTest1()
+    # insertTest2()
+    # selectTest1()
+    # selectTest2()
+    # rankTest1()
+    # deleteTest1()
+
+    test()
