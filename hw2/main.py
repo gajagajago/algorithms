@@ -1,7 +1,3 @@
-import random
-
-VAL = 6
-
 class RBNode:
     def __init__(self, val: int, size: int, color: str):
         self.val = val
@@ -235,7 +231,6 @@ class RBTree:
         if new.color == 'R' and new.p.color == 'R':
             self.__fixTree(new)
 
-        # Update root
         self.__updateRoot(new)
 
         return val
@@ -332,7 +327,7 @@ class RBTree:
             self.nr = self.nr - 1
             m = target.successor()
 
-            ## When deleting root with no successor
+            # When deleting root with no successor
             if target == m and target == self.root:
                 target.lc.p = target.p
                 target.lc.color = 'B'
@@ -347,7 +342,7 @@ class RBTree:
                     x = m.rc
                     p.lc = x
                     x.p = p
-                else:   # m.color = 'B'
+                else:  # m.color = 'B'
                     if not m.isNil():
                         if m.lc.color == 'R':
                             x = m.lc
@@ -377,7 +372,7 @@ class RBTree:
                     x = m.lc
                     p.rc = x
                     x.p = p
-                else:   # m.color = 'B'
+                else:  # m.color = 'B'
                     if not m.isNil():
                         if m.lc.color == 'R':
                             x = m.lc
@@ -436,44 +431,43 @@ class RBTree:
 
             return r
 
-
-def test():
-    tree = RBTree()
-
-    li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
-
-    for i in li:
-        print("-------------------------------")
-        print("Insert({})".format(i))
-        tree.insert(i)
-        print("ROOT({})".format(tree.root.val))
-        tree.root.display()
-        print("-------------------------------")
-
-    # 문제1
-    # lj = [1,8,3,11,9,2,5,4]
-    # for i in lj:
-    #     print("-------------------------------")
-    #     print("Delete({})".format(i))
-    #     tree.delete(i)
-    #     print("ROOT({})".format(tree.root.val))
-    #     tree.root.display()
-    #     print("-------------------------------")
-
-
-    random.shuffle(li)
-
-    for i in li:
-        print("-------------------------------")
-        print("Delete({})".format(i))
-        tree.delete(i)
-        print("ROOT({})".format(tree.root.val))
-        tree.root.display()
-        print("-------------------------------")
+# def test():
+#     tree = RBTree()
+#
+#     li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
+#
+#     for i in li:
+#         print("-------------------------------")
+#         print("Insert({})".format(i))
+#         tree.insert(i)
+#         print("ROOT({})".format(tree.root.val))
+#         tree.root.display()
+#         print("-------------------------------")
+#
+#     # 문제1
+#     # lj = [1,8,3,11,9,2,5,4]
+#     # for i in lj:
+#     #     print("-------------------------------")
+#     #     print("Delete({})".format(i))
+#     #     tree.delete(i)
+#     #     print("ROOT({})".format(tree.root.val))
+#     #     tree.root.display()
+#     #     print("-------------------------------")
+#
+#     random.shuffle(li)
+#
+#     for i in li:
+#         print("-------------------------------")
+#         print("Delete({})".format(i))
+#         tree.delete(i)
+#         print("ROOT({})".format(tree.root.val))
+#         tree.root.display()
+#         print("-------------------------------")
 
 
 if __name__ == '__main__':
     dir = "./input0/"
+    line_cnt = 0
 
     with open(dir + "output.txt", "w") as f_out:
         # print inst list
@@ -481,6 +475,7 @@ if __name__ == '__main__':
             lines = f_in.readlines()
             for line in lines:
                 f_out.write(line)
+                line_cnt = line_cnt + 1
 
         tree = RBTree()
 
@@ -501,10 +496,93 @@ if __name__ == '__main__':
                     wr = tree.select(val)
                 elif inst == 'R':
                     wr = tree.rank(val)
-                else:
-                    print("Invalid input")
-                    sys.exit()
 
                 f_out.write("{}\n".format(wr))
 
-    # test()
+    ## checker
+    MAX = 9999
+    A = [0] * (MAX + 1)
+
+    with open(dir + "checker.txt", "w") as f_check:
+
+        with open(dir + "output.txt", "r") as f_out:
+            out_lines = f_out.readlines()
+
+            with open(dir + "input.txt", "r") as f_in:
+                lines = f_in.readlines()
+
+                for line in lines:
+                    inst, val = line.split(" ")
+                    val = int(val)
+                    result = int(out_lines[line_cnt])
+
+                    print("inst {} val {} result {}".format(inst, val, result))
+                    if inst == 'I':
+                        if A[val] is 0:
+                            if val == result:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+                            A[val] = 1
+
+                        elif A[val] is 1:
+                            if result == 0:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+
+                    elif inst == 'D':
+                        if A[val] is 1:
+                            if val == result:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+                            A[val] = 0
+
+                        elif A[val] is 0:
+                            if result == 0:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+                    elif inst == 'S':
+                        if val > MAX:
+                            if result == 0:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+                        else:
+                            cnt = 0
+                            found = False
+                            for i in range(0, MAX + 1):
+                                cnt = cnt + A[i]
+                                if cnt == val:
+                                    found = True
+                                    if i == result:
+                                        f_check.write("Correct\n")
+                                    else:
+                                        f_check.write("False\n")
+                                    break;
+
+                            # could not find
+                            if not found:
+                                if 0 == result:
+                                    f_check.write("Correct\n")
+                                else:
+                                    f_check.write("False\n")
+
+                    elif inst == 'R':
+                        if A[val] == 1:
+                            cnt = 0
+                            for i in range(0, val + 1):
+                                cnt = cnt + A[i]
+                            if cnt == result:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+                        elif A[val] == 0:
+                            if result == 0:
+                                f_check.write("Correct\n")
+                            else:
+                                f_check.write("False\n")
+
+                    line_cnt = line_cnt + 1
