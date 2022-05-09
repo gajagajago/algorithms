@@ -100,11 +100,8 @@ class RBTree:
         x = p.rc
         p2 = p.p
         x.p = p2
-        # if p2 is not self.root:
-        # print("__left rotate: x({})p({})p2({}))".format(x.val, p.val, p2.val))
 
         if p is not self.root:
-            # print("P is not root")
             if p == p2.lc:
                 p2.lc = x
             else:
@@ -118,11 +115,6 @@ class RBTree:
         # do not fix order
         p.fixSize()
         x.fixSize()
-
-        # print("show result __left_rotate")
-        # self.root.display()
-        # if x.p is not None:
-        #     print("x.p = ", x.p.val)
 
     def __rightRotate(self, p: RBNode):
         x = p.lc
@@ -140,8 +132,7 @@ class RBTree:
         x.rc.p = p
         p.p = x
         x.rc = p
-        if VAL == 6:
-            print("during right roate, is x p's parent", x == p.p)
+
         # do not fix order
         p.fixSize()
         x.fixSize()
@@ -206,7 +197,6 @@ class RBTree:
             else:
                 return c
 
-        print('RBNode with val %s not exist' % val)
         return None
 
     def insert(self, val: int):
@@ -221,7 +211,7 @@ class RBTree:
             elif new.val > c.val:
                 c = c.rc
             else:
-                return val
+                return 0
 
         new.p = p
         if new.p is None:
@@ -248,7 +238,7 @@ class RBTree:
         # Update root
         self.__updateRoot(new)
 
-        return 0
+        return val
 
     # x is black. x is p.lc
     def __deleteL(self, x: RBNode):
@@ -256,10 +246,6 @@ class RBTree:
         s = p.rc
         l = s.lc
         r = s.rc
-
-        if VAL == 6:
-            # self.root.display()
-            print("x({})p({})".format(x.val, p.val))
 
         pslr = p.color, s.color, l.color, r.color
 
@@ -271,8 +257,6 @@ class RBTree:
             p.color, s.color = s.color, p.color
             r.color = 'B'
         elif pslr == ('R', 'B', 'R', 'B') or pslr == ('B', 'B', 'R', 'B'):
-            # if VAL == 6:
-            #     print("before rotate x({})p({})p2({})s({})".format(x.val, x.p.val, x.p.p.val, s.val))
             self.__rightRotate(s)
             ## 여기 잘 안돼서 추가
             x = p.lc
@@ -282,8 +266,7 @@ class RBTree:
             # s, l fix size
             s.fixSize()
             l.fixSize()
-            if VAL == 6:
-                print("after rotate x({})p({})s({})".format(x.val, p.val, s.val))
+
             self.__deleteL(x)
         elif pslr == ('B', 'B', 'B', 'B'):
             s.color = 'R'
@@ -305,9 +288,7 @@ class RBTree:
         s = p.lc
         l = s.lc
         r = s.rc
-        # print("x({})p({})s({}))".format(x.val, p.val, s.val))
-        #
-        # print("p({})s({})l({})r({})".format(p.val, s.val, l.val, r.val))
+
         pslr = p.color, s.color, l.color, r.color
 
         if pslr == ('R', 'B', 'B', 'B'):
@@ -358,8 +339,6 @@ class RBTree:
                 self.root = target.lc
                 return val
 
-            if VAL == val: print("delete m({}) m.p({})".format(m.val, m.p.val))
-
             target.val, m.val = m.val, target.val
             p = m.p
 
@@ -385,30 +364,12 @@ class RBTree:
                             p.lc = x
                             x.p = p
                             self.__deleteL(x)
-                        # else: # m.lc.color == 'B':
-                        #     x = m.lc
-                        #     p.lc = x
-                        #     x.p = p
-                        #     self.__deleteR(x)
-
-                # x = m.rc
-                # if VAL == val: print("delete x({})".format(x.val))
-                #
-                # p.lc = x
-                # x.p = p
-                #
-                # if m.color == 'B' and x.color == 'B':
-                #     self.__deleteL(x)
-                #
-                # if x.color == 'R':
-                #     x.color = 'B'
 
                 c = x
                 while c is not None:
                     c.fixSize()
                     c = c.p
 
-                # update root
                 self.__updateRoot(x)
 
             else:  # m == p.rc
@@ -433,29 +394,12 @@ class RBTree:
                             p.rc = x
                             x.p = p
                             self.__deleteR(x)
-                        # else: # m.lc.color == 'B':
-                        #     x = m.c
-                        #     p.rc = x
-                        #     x.p = p
-                        #     self.__deleteR(x)
-                # x = m.lc
-                # if VAL == val: print("delete x({})".format(x.val))
-                #
-                # p.rc = x
-                # x.p = p
-                #
-                # if m.color == 'B' and x.color == 'B':
-                #     self.__deleteR(x)
-                #
-                # if x.color == 'R':
-                #     x.color = 'B'
 
                 c = x
                 while c is not None:
                     c.fixSize()
                     c = c.p
 
-                # update root
                 self.__updateRoot(x)
 
             return val
@@ -527,39 +471,40 @@ def test():
         tree.root.display()
         print("-------------------------------")
 
-def deleteTest1():
-    tree = RBTree()
-
-    li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
-
-    for i in li:
-        tree.insert(i)
-
-    tree.delete(6)
-
-    if tree.root.val == 7:
-        print('Delete test 1 passed')
-    else:
-        print('Delete test 1 failed')
-
-    tree.root.display()
-
-    tree.delete(10)
-    tree.root.display()
-
-    # tree.delete(8)
-    # tree.root.display()
-    #
-    # tree.delete(11)
-    # tree.root.display()
-
 
 if __name__ == '__main__':
-    # insertTest1()
-    # insertTest2()
-    # selectTest1()
-    # selectTest2()
-    # rankTest1()
-    # deleteTest1()
+    dir = "./input0/"
 
-    test()
+    with open(dir + "output.txt", "w") as f_out:
+        # print inst list
+        with open(dir + "input.txt", "r") as f_in:
+            lines = f_in.readlines()
+            for line in lines:
+                f_out.write(line)
+
+        tree = RBTree()
+
+        with open(dir + "input.txt", "r") as f_in:
+            lines = f_in.readlines()
+            wr = ''
+
+            for line in lines:
+                inst, val = line.split(" ")
+                val = int(val)
+
+                wr = None
+                if inst == 'I':
+                    wr = tree.insert(val)
+                elif inst == 'D':
+                    wr = tree.delete(val)
+                elif inst == 'S':
+                    wr = tree.select(val)
+                elif inst == 'R':
+                    wr = tree.rank(val)
+                else:
+                    print("Invalid input")
+                    sys.exit()
+
+                f_out.write("{}\n".format(wr))
+
+    # test()
