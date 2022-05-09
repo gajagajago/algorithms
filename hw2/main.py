@@ -432,42 +432,9 @@ class RBTree:
             return r
 
 
-# def test():
-#     tree = RBTree()
-#
-#     li = [5, 2, 4, 7, 6, 8, 9, 1, 10, 11, 3]
-#
-#     for i in li:
-#         print("-------------------------------")
-#         print("Insert({})".format(i))
-#         tree.insert(i)
-#         print("ROOT({})".format(tree.root.val))
-#         tree.root.display()
-#         print("-------------------------------")
-#
-#     # 문제1
-#     # lj = [1,8,3,11,9,2,5,4]
-#     # for i in lj:
-#     #     print("-------------------------------")
-#     #     print("Delete({})".format(i))
-#     #     tree.delete(i)
-#     #     print("ROOT({})".format(tree.root.val))
-#     #     tree.root.display()
-#     #     print("-------------------------------")
-#
-#     random.shuffle(li)
-#
-#     for i in li:
-#         print("-------------------------------")
-#         print("Delete({})".format(i))
-#         tree.delete(i)
-#         print("ROOT({})".format(tree.root.val))
-#         tree.root.display()
-#         print("-------------------------------")
-
-
 if __name__ == '__main__':
-    dir = "./input0/"
+    # Fill in the directory where input.txt is located
+    dir = "./input1/"
     line_cnt = 0
 
     with open(dir + "output.txt", "w") as f_out:
@@ -477,14 +444,13 @@ if __name__ == '__main__':
             for line in lines:
                 f_out.write(line)
                 line_cnt = line_cnt + 1
-
         tree = RBTree()
 
         with open(dir + "input.txt", "r") as f_in:
             lines = f_in.readlines()
             wr = ''
 
-            for line in lines:
+            for idx, line in enumerate(lines, start=0):
                 inst, val = line.split(" ")
                 val = int(val)
 
