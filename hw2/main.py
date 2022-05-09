@@ -253,10 +253,10 @@ class RBTree:
             r.color = 'B'
         elif pslr == ('R', 'B', 'R', 'B') or pslr == ('B', 'B', 'R', 'B'):
             self.__rightRotate(s)
-            ## 여기 잘 안돼서 추가
+            # Re-set x due to some error
             x = p.lc
             x.p = p
-            ##
+            #
             l.color, s.color = s.color, l.color
             # s, l fix size
             s.fixSize()
@@ -295,10 +295,10 @@ class RBTree:
             l.color = 'B'
         elif pslr == ('R', 'B', 'B', 'R') or pslr == ('B', 'B', 'B', 'R'):
             self.__leftRotate(s)
-            ## 여기 잘 안돼서 추가
+            # Re-set x due to some error
             x = p.rc
             x.p = p
-            ##
+            #
             r.color, s.color = s.color, r.color
             # s, r fix size
             s.fixSize()
@@ -431,6 +431,7 @@ class RBTree:
 
             return r
 
+
 # def test():
 #     tree = RBTree()
 #
@@ -516,7 +517,6 @@ if __name__ == '__main__':
                     val = int(val)
                     result = int(out_lines[line_cnt])
 
-                    print("inst {} val {} result {}".format(inst, val, result))
                     if inst == 'I':
                         if A[val] is 0:
                             if val == result:
