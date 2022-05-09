@@ -1,6 +1,6 @@
 import random
 
-VAL = 100
+VAL = 1
 
 class RBNode:
     def __init__(self, val: int, size: int, color: str):
@@ -20,11 +20,11 @@ class RBNode:
 
         return s
 
-    def __isNil(self):
+    def isNil(self):
         return self.size == 0
 
     def fixSize(self):
-        if not self.__isNil():
+        if not self.isNil():
             self.size = self.lc.size + self.rc.size + 1
 
     def display(self):
@@ -275,11 +275,13 @@ class RBTree:
             self.__deleteL(x)
         elif pslr == ('B', 'B', 'B', 'B'):
             s.color = 'R'
-            p2 = p.p
-            if p == p2.lc:
-                self.__deleteL(p)
-            else:
-                self.__deleteR(p)
+
+            if p is not self.root:
+                p2 = p.p
+                if p == p2.lc:
+                    self.__deleteL(p)
+                else:
+                    self.__deleteR(p)
         else:  # (BRBB)
             self.__leftRotate(p)
             p.color, s.color = s.color, p.color
@@ -312,11 +314,13 @@ class RBTree:
             self.__deleteR(x)
         elif pslr == ('B', 'B', 'B', 'B'):
             s.color = 'R'
-            p2 = p.p
-            if p == p2.lc:
-                self.__deleteL(p)
-            else:
-                self.__deleteR(p)
+
+            if p is not self.root:
+                p2 = p.p
+                if p == p2.lc:
+                    self.__deleteL(p)
+                else:
+                    self.__deleteR(p)
         else:  # (BRBB)
             self.__rightRotate(p)
             p.color, s.color = s.color, p.color
@@ -337,17 +341,39 @@ class RBTree:
             p = m.p
 
             if m == p.lc:
-                x = m.rc
-                if VAL == val: print("delete x({})".format(x.val))
+                if m.color == 'R':
+                    x = m.rc
+                    p.lc = x
+                    x.p = p
+                else:   # m.color = 'B'
+                    if not m.isNil():
+                        if m.lc.color == 'R':
+                            x = m.lc
+                            p.lc = x
+                            x.p = p
+                            x.color = 'B'
+                        elif m.rc.color == 'R':
+                            x = m.rc
+                            p.lc = x
+                            x.p = p
+                            x.color = 'B'
+                        elif m.rc.color == 'B':
+                            x = m.rc
+                            p.lc = x
+                            x.p = p
+                            self.__deleteL(x)
 
-                p.lc = x
-                x.p = p
-
-                if m.color == 'B' and x.color == 'B':
-                    self.__deleteL(x)
-
-                if x.color == 'R':
-                    x.color = 'B'
+                # x = m.rc
+                # if VAL == val: print("delete x({})".format(x.val))
+                #
+                # p.lc = x
+                # x.p = p
+                #
+                # if m.color == 'B' and x.color == 'B':
+                #     self.__deleteL(x)
+                #
+                # if x.color == 'R':
+                #     x.color = 'B'
 
                 c = x
                 while c is not None:
@@ -359,17 +385,38 @@ class RBTree:
 
 
             else:  # m == p.rc
-                x = m.lc
-                if VAL == val: print("delete x({})".format(x.val))
-
-                p.rc = x
-                x.p = p
-
-                if m.color == 'B' and x.color == 'B':
-                    self.__deleteR(x)
-
-                if x.color == 'R':
-                    x.color = 'B'
+                if m.color == 'R':
+                    x = m.lc
+                    p.rc = x
+                    x.p = p
+                else:   # m.color = 'B'
+                    if not m.isNil():
+                        if m.lc.color == 'R':
+                            x = m.lc
+                            p.lc = x
+                            x.p = p
+                            x.color = 'B'
+                        elif m.rc.color == 'R':
+                            x = m.rc
+                            p.lc = x
+                            x.p = p
+                            x.color = 'B'
+                        elif m.lc.color == 'B':
+                            x = m.lc
+                            p.rc = x
+                            x.p = p
+                            self.__deleteR(x)
+                # x = m.lc
+                # if VAL == val: print("delete x({})".format(x.val))
+                #
+                # p.rc = x
+                # x.p = p
+                #
+                # if m.color == 'B' and x.color == 'B':
+                #     self.__deleteR(x)
+                #
+                # if x.color == 'R':
+                #     x.color = 'B'
 
                 c = x
                 while c is not None:
@@ -428,24 +475,24 @@ def test():
         print("-------------------------------")
 
     # 문제1
-    # lj = [4,9,5]
-    # for i in lj:
-    #     print("-------------------------------")
-    #     print("Delete({})".format(i))
-    #     tree.delete(i)
-    #     print("ROOT({})".format(tree.root.val))
-    #     tree.root.display()
-    #     print("-------------------------------")
-
-    random.shuffle(li)
-
-    for i in li:
+    lj = [9,7,3,11,2,8,4,6,1]
+    for i in lj:
         print("-------------------------------")
         print("Delete({})".format(i))
         tree.delete(i)
         print("ROOT({})".format(tree.root.val))
         tree.root.display()
         print("-------------------------------")
+
+    # random.shuffle(li)
+    #
+    # for i in li:
+    #     print("-------------------------------")
+    #     print("Delete({})".format(i))
+    #     tree.delete(i)
+    #     print("ROOT({})".format(tree.root.val))
+    #     tree.root.display()
+    #     print("-------------------------------")
 
 def deleteTest1():
     tree = RBTree()
