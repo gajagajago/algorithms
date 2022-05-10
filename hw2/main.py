@@ -86,12 +86,6 @@ class RBTree:
 
         return new
 
-    def __updateRoot(self, x: RBNode):
-        while x.p is not None:
-            x = x.p
-
-        self.root = x
-
     def __leftRotate(self, p: RBNode):
         x = p.rc
         p2 = p.p
@@ -369,8 +363,6 @@ class RBTree:
                     c.fixSize()
                     c = c.p
 
-                # self.__updateRoot(x)
-
             else:  # m == p.rc
                 if m.color == 'R':
                     x = m.lc
@@ -398,8 +390,6 @@ class RBTree:
                 while c is not None:
                     c.fixSize()
                     c = c.p
-
-                # self.__updateRoot(x)
 
             return val
 
@@ -473,6 +463,7 @@ if __name__ == '__main__':
     ## checker
     MAX = 9999
     A = [0] * (MAX + 1)
+    finalCheck = True
 
     with open(dir + "checker.txt", "w") as f_check:
 
@@ -538,5 +529,8 @@ if __name__ == '__main__':
                         f_check.write("Correct\n")
                     else:
                         f_check.write("False\n")
+                        finalCheck = False
 
                     line_cnt = line_cnt + 1
+
+    print("Checker {}".format("Passed" if finalCheck else "Failed"))
