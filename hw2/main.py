@@ -337,8 +337,6 @@ class RBTree:
                     target.lc.color = 'B'
                     self.root = target.lc
                     return val
-                # else:
-                #     self.root = m
 
             target.val, m.val = m.val, target.val
             p = m.p
@@ -440,7 +438,7 @@ class RBTree:
 
 if __name__ == '__main__':
     # Fill in the directory where input.txt is located
-    dir = "./input2/"
+    dir = "./input0/"
     line_cnt = 0
 
     with open(dir + "output.txt", "w") as f_out:
@@ -488,40 +486,28 @@ if __name__ == '__main__':
                     inst, val = line.split(" ")
                     val = int(val)
                     result = int(out_lines[line_cnt])
+                    check = None    # Result of checker
 
                     if inst == 'I':
                         if A[val] is 0:
-                            if val == result:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
                             A[val] = 1
+                            check = val == result
 
                         elif A[val] is 1:
-                            if result == 0:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
+                            check = result == 0
 
                     elif inst == 'D':
                         if A[val] is 1:
-                            if val == result:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
                             A[val] = 0
+                            check = val == result
 
                         elif A[val] is 0:
-                            if result == 0:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
+                            check = result == 0
+
                     elif inst == 'S':
                         if val > MAX:
-                            if result == 0:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
+                            check = result == 0
+
                         else:
                             cnt = 0
                             found = False
@@ -529,32 +515,28 @@ if __name__ == '__main__':
                                 cnt = cnt + A[i]
                                 if cnt == val:
                                     found = True
-                                    if i == result:
-                                        f_check.write("Correct\n")
-                                    else:
-                                        f_check.write("False\n")
-                                    break;
+                                    check = i == result
+                                    break
 
                             # could not find
                             if not found:
-                                if 0 == result:
-                                    f_check.write("Correct\n")
-                                else:
-                                    f_check.write("False\n")
+                                check = result == 0
 
                     elif inst == 'R':
                         if A[val] == 1:
                             cnt = 0
                             for i in range(0, val + 1):
                                 cnt = cnt + A[i]
-                            if cnt == result:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
+
+                            check = cnt == result
+
                         elif A[val] == 0:
-                            if result == 0:
-                                f_check.write("Correct\n")
-                            else:
-                                f_check.write("False\n")
+                            check = result == 0
+
+                    # Write check result to checker.txt
+                    if check:
+                        f_check.write("Correct\n")
+                    else:
+                        f_check.write("False\n")
 
                     line_cnt = line_cnt + 1
