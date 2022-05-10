@@ -6,6 +6,11 @@ class RBNode:
         self.p = self.lc = self.rc = None
 
     def successor(self):
+        """ Returns the successor node.
+        If the successor node is not found, returns itself.
+
+        :return: Successor node
+        """
         s = self.rc
 
         if s.val is None:
@@ -17,9 +22,15 @@ class RBNode:
         return s
 
     def isNil(self):
+        """ Checks if this is a NIL node using size.
+
+        :return: Whether this is a NIL node
+        """
         return self.size == 0
 
     def fixSize(self):
+        """ Fix the size of the node using the size of child nodes.
+        """
         if not self.isNil():
             self.size = self.lc.size + self.rc.size + 1
 
@@ -31,12 +42,21 @@ class RBTree:
         self.nr = 0
 
     def __makeNew(self, val: int):
+        """ Creates a fresh red node of size 1.
+
+        :param val: Key of the node
+        :return: A newly created node
+        """
         new = RBNode(val, 1, 'R')
         new.lc = new.rc = self.nil
 
         return new
 
     def __leftRotate(self, p: RBNode):
+        """ Left rotate a subtree rooted at p.
+
+        :param p: Root of the subtree
+        """
         x = p.rc
         p2 = p.p
         x.p = p2
@@ -59,6 +79,10 @@ class RBTree:
         x.fixSize()
 
     def __rightRotate(self, p: RBNode):
+        """ Right rotate a subtree rooted at p.
+
+        :param p: Root of the subtree
+        """
         x = p.lc
         p2 = p.p
 
@@ -82,6 +106,11 @@ class RBTree:
         x.fixSize()
 
     def __fixTree(self, x: RBNode):
+        """ Fix RBTree property.
+        Called from tree insert operation.
+
+        :param x: Trouble node
+        """
         p = x.p
         p2 = p.p
 
@@ -131,6 +160,11 @@ class RBTree:
                     p2.color, p.color = p.color, p2.color
 
     def get(self, val: int):
+        """ Retrieve node with key == val.
+
+        :param val: Search key
+        :return: If found, node with key == val. Else, None.
+        """
         c = self.root
 
         while c is not self.nil:
@@ -144,6 +178,11 @@ class RBTree:
         return None
 
     def insert(self, val: int):
+        """ Insert a node with key == val to the tree.
+
+        :param val: Key of the node to be inserted
+        :return: If a node with same key NOT exist in the tree, val. Else, 0.
+        """
         new = self.__makeNew(val)
 
         p = None
@@ -265,13 +304,18 @@ class RBTree:
             self.__deleteR(x)
 
     def delete(self, val: int):
+        """ Delete a node with key == val.
+
+        :param val: Key of a node to be deleted.
+        :return: If the node with key == val is found, val. Else, 0.
+        """
         target = self.get(val)
 
         if target is None:
             return 0
         else:
-            self.nr = self.nr - 1
             m = target.successor()
+            x = None
 
             # When deleting root
             if target == self.root:
@@ -308,11 +352,6 @@ class RBTree:
                             x.p = p
                             self.__deleteL(x)
 
-                c = x
-                while c is not None:
-                    c.fixSize()
-                    c = c.p
-
             else:  # m == p.rc
                 if m.color == 'R':
                     x = m.lc
@@ -336,10 +375,12 @@ class RBTree:
                             x.p = p
                             self.__deleteR(x)
 
-                c = x
-                while c is not None:
-                    c.fixSize()
-                    c = c.p
+            c = x
+            while c is not None:
+                c.fixSize()
+                c = c.p
+
+            self.nr = self.nr - 1
 
             return val
 
@@ -354,12 +395,22 @@ class RBTree:
             return self.__select(x.rc, i - r)
 
     def select(self, i: int):
+        """ Search for the node with the ith smallest key.
+
+        :param i: ith smallest
+        :return: If found, the ith smallest key. Else, 0.
+        """
         if self.nr < i:
             return 0
         else:
             return self.__select(self.root, i)
 
     def rank(self, val: int):
+        """ Find the rank of the node with key == val.
+
+        :param val: Key of the node
+        :return: If node found, the rank. Else, 0.
+        """
         x = self.get(val)
 
         if x is None:
@@ -410,7 +461,7 @@ if __name__ == '__main__':
 
                 f_out.write("{}\n".format(wr))
 
-    ## checker
+    """Checker"""
     MAX = 9999
     A = [0] * (MAX + 1)
 
@@ -420,68 +471,66 @@ if __name__ == '__main__':
 
         with open(dir + "output.txt", "r") as f_out:
             out_lines = f_out.readlines()
+            result_starts_from = line_cnt
 
-            with open(dir + "input.txt", "r") as f_in:
-                lines = f_in.readlines()
+            for line in out_lines[0:result_starts_from]:
+                inst, val = line.split(" ")
+                val = int(val)
+                result = int(out_lines[line_cnt])
+                check = None  # Result of checker
 
-                for line in lines:
-                    inst, val = line.split(" ")
-                    val = int(val)
-                    result = int(out_lines[line_cnt])
-                    check = None    # Result of checker
+                if inst == 'I':
+                    if A[val] is 0:
+                        A[val] = 1
+                        check = val == result
 
-                    if inst == 'I':
-                        if A[val] is 0:
-                            A[val] = 1
-                            check = val == result
+                    elif A[val] is 1:
+                        check = result == 0
 
-                        elif A[val] is 1:
-                            check = result == 0
+                elif inst == 'D':
+                    if A[val] is 1:
+                        A[val] = 0
+                        check = val == result
 
-                    elif inst == 'D':
-                        if A[val] is 1:
-                            A[val] = 0
-                            check = val == result
+                    elif A[val] is 0:
+                        check = result == 0
 
-                        elif A[val] is 0:
-                            check = result == 0
+                elif inst == 'S':
+                    if val > MAX:
+                        check = result == 0
 
-                    elif inst == 'S':
-                        if val > MAX:
-                            check = result == 0
-
-                        else:
-                            cnt = 0
-                            found = False
-                            for i in range(0, MAX + 1):
-                                cnt = cnt + A[i]
-                                if cnt == val:
-                                    found = True
-                                    check = i == result
-                                    break
-
-                            # could not find
-                            if not found:
-                                check = result == 0
-
-                    elif inst == 'R':
-                        if A[val] == 1:
-                            cnt = 0
-                            for i in range(0, val + 1):
-                                cnt = cnt + A[i]
-
-                            check = cnt == result
-
-                        elif A[val] == 0:
-                            check = result == 0
-
-                    # Write check result to checker.txt
-                    if check:
-                        f_check.write("Correct\n")
                     else:
-                        f_check.write("False\n")
-                        finalCheck = False
+                        cnt = 0
+                        found = False
+                        for i in range(0, MAX + 1):
+                            cnt = cnt + A[i]
+                            if cnt == val:
+                                found = True
+                                check = i == result
+                                break
 
-                    line_cnt = line_cnt + 1
+                        # could not find
+                        if not found:
+                            check = result == 0
+
+                elif inst == 'R':
+                    if A[val] == 1:
+                        cnt = 0
+                        for i in range(0, val + 1):
+                            cnt = cnt + A[i]
+
+                        check = cnt == result
+
+                    elif A[val] == 0:
+                        check = result == 0
+
+                # Write check result to checker.txt
+                if check:
+                    f_check.write("Correct\n")
+                else:
+                    f_check.write("False\n")
+                    finalCheck = False
+
+                line_cnt = line_cnt + 1
 
     print("Checker {}".format("Passed" if finalCheck else "Failed"))
