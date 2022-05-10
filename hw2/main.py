@@ -102,6 +102,8 @@ class RBTree:
                 p2.lc = x
             else:
                 p2.rc = x
+        else:
+            self.root = x
 
         p.rc = x.lc
         x.lc.p = p
@@ -123,6 +125,8 @@ class RBTree:
                 p2.lc = x
             else:
                 p2.rc = x
+        else:
+            self.root = x
 
         p.lc = x.rc
         x.rc.p = p
@@ -231,8 +235,6 @@ class RBTree:
         if new.color == 'R' and new.p.color == 'R':
             self.__fixTree(new)
 
-        self.__updateRoot(new)
-
         return val
 
     # x is black. x is p.lc
@@ -327,12 +329,16 @@ class RBTree:
             self.nr = self.nr - 1
             m = target.successor()
 
-            # When deleting root with no successor
-            if target == m and target == self.root:
-                target.lc.p = target.p
-                target.lc.color = 'B'
-                self.root = target.lc
-                return val
+            # When deleting root
+            if target == self.root:
+                # with no successor
+                if target == m:
+                    target.lc.p = target.p
+                    target.lc.color = 'B'
+                    self.root = target.lc
+                    return val
+                # else:
+                #     self.root = m
 
             target.val, m.val = m.val, target.val
             p = m.p
@@ -365,7 +371,7 @@ class RBTree:
                     c.fixSize()
                     c = c.p
 
-                self.__updateRoot(x)
+                # self.__updateRoot(x)
 
             else:  # m == p.rc
                 if m.color == 'R':
@@ -395,7 +401,7 @@ class RBTree:
                     c.fixSize()
                     c = c.p
 
-                self.__updateRoot(x)
+                # self.__updateRoot(x)
 
             return val
 
@@ -434,7 +440,7 @@ class RBTree:
 
 if __name__ == '__main__':
     # Fill in the directory where input.txt is located
-    dir = "./input1/"
+    dir = "./input2/"
     line_cnt = 0
 
     with open(dir + "output.txt", "w") as f_out:
