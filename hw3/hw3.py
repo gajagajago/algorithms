@@ -39,7 +39,7 @@ class AdjMatrix:
 def dfs_matrix(adjMatrix, nr_vertices, visited, start_vi, stack):
     """
     Perform DFS on AdjMatrix
-    :param matrix: Adjacency matrix
+    :param adjMatrix: Adjacency matrix
     :param nr_vertices: Number of vertices in matrix
     :param visited: Boolean list of visit info for each vertex. Must be init to all False at 1st call
     :param start_vi: Index of vertex to start DFS
