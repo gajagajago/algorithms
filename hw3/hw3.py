@@ -138,7 +138,8 @@ class AdjArray:
         to = self.pos_list[vi]
 
         if to == fr:
-            self.array.append(val)
+            self.array.insert(to, val)
+            # self.array.x(val)
         else:
             idx = to
             for j in range(fr, to):
@@ -146,6 +147,28 @@ class AdjArray:
                     idx = j
                     break
             self.array.insert(idx, val)
+
+    def transpose(self):
+        """
+        Transpose adjacency array
+        :return: Transposed adjacency array
+        """
+        adj_array_t = AdjArray(self.nr_vertices)
+
+        for start_vi in range(STARTING_VERTEX, self.nr_vertices+1):
+            fr = self.pos_list[start_vi - 1] + 1
+            to = self.pos_list[start_vi]
+            # print("fr: {} to: {}".format(fr, to))
+            for i in range(fr, to+1):
+                vi = self.array[i]
+                # print("start_vi: %d vi: %d" % (start_vi, vi))
+
+                adj_array_t.addEntity(vi, start_vi)
+
+            # adj_array_t.print()
+
+        return adj_array_t
+
 
     def print(self):
         print("<<Adj Array>>")
@@ -156,6 +179,21 @@ class AdjArray:
             list = [str(li) for li in list]
 
             print("{}: {}".format(j, "->".join(list)))
+
+def dfs_array(adjArray, nr_verticies, visited, start_vi, stack):
+    visited[start_vi] = True
+
+    fr = adjArray.pos_list[start_vi - 1] + 1
+    to = adjArray.pos_list[start_vi]
+
+    for i in range(fr, to+1):
+        vi = adjArray.array[i]
+        if visited[vi] == 0:
+            dfs_array(adjArray, nr_verticies, visited, vi, stack)
+
+    stack.append(start_vi)
+
+    return stack
 
 
 if __name__ == "__main__":
@@ -187,7 +225,7 @@ if __name__ == "__main__":
 
         """ Print graph representations """
         # adj_matrix.print()
-        adj_list.print()
+        # adj_list.print()
         # adj_array.print()
 
         """ Get results """
@@ -217,7 +255,7 @@ if __name__ == "__main__":
                 stack = []
 
         # 2. adj_list
-        print("[Result] Adj List")
+        print("\n[Result] Adj List")
         visited = [False for _ in range(adj_list.nr_vertices + 1)]
         stack = []
 
@@ -226,6 +264,8 @@ if __name__ == "__main__":
             dfs_list(adj_list.list, adj_list.nr_vertices, visited, start_vi, stack)
 
         g_r = adj_list.transpose()
+
+        # print("Transposed adj list")
         # g_r.print()
         f = stack.copy()
 
@@ -238,5 +278,34 @@ if __name__ == "__main__":
                 break
             if visited[start_vi] is False:
                 tree = dfs_list(g_r.list, adj_list.nr_vertices, visited, start_vi, stack)
+                print(tree)
+                stack = []
+
+        # 3. adj_array
+        print("\n[Result] Adj array")
+        # print("Adj array position ", adj_array.pos_list)
+        # print("Adj array vanilla ", adj_array.array)
+        visited = [False for _ in range(adj_list.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = visited.index(False)
+            dfs_array(adj_array, adj_array.nr_vertices, visited, start_vi, stack)
+
+        # print("Adj array stack", stack)
+        g_r = adj_array.transpose()
+        # print("Transposed adj array")
+        # g_r.print()
+        f = stack.copy()
+
+        visited = [False for _ in range(adj_list.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = f.pop()
+            if start_vi == 0:
+                break
+            if visited[start_vi] is False:
+                tree = dfs_array(g_r, adj_array.nr_vertices, visited, start_vi, stack)
                 print(tree)
                 stack = []
