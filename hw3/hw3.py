@@ -21,18 +21,37 @@ class AdjMatrix:
         self.matrix = np.zeros((nrv + 1, nrv + 1), dtype=int)
         self.nr_vertices = nrv
 
+    def transpose(self):
+        """
+        Transpose adjacency matrix
+        :return: Transposed matrix
+        """
+        adj_matrix_t = AdjMatrix(self.nr_vertices)
+        adj_matrix_t.matrix = self.matrix.T
+
+        return adj_matrix_t
+
     def print(self):
         print("<<Adj Matrix>>")
         print(self.matrix)
 
 
-def dfs_matrix(matrix, nr_verticies, visited, start_vi, stack):
+def dfs_matrix(adjMatrix, nr_vertices, visited, start_vi, stack):
+    """
+    Perform DFS on AdjMatrix
+    :param matrix: Adjacency matrix
+    :param nr_vertices: Number of vertices in matrix
+    :param visited: Boolean list of visit info for each vertex. Must be init to all False at 1st call
+    :param start_vi: Index of vertex to start DFS
+    :param stack: Data structure to save DFS order
+    :return: DFS order of vertices
+    """
     visited[start_vi] = True
 
-    for vi in range(STARTING_VERTEX, nr_verticies+1):
+    for vi in range(STARTING_VERTEX, nr_vertices+1):
         """" Recurse on adjacent && unvisited nodes """
-        if visited[vi] is False and matrix[start_vi][vi] == 1:
-            dfs_matrix(matrix, nr_verticies, visited, vi, stack)
+        if visited[vi] is False and adjMatrix.matrix[start_vi][vi] == 1:
+            dfs_matrix(adjMatrix, nr_vertices, visited, vi, stack)
 
     stack.append(start_vi)
 
@@ -96,9 +115,17 @@ class AdjList:
             print("{}: {}".format(j, "->".join(adjacent_vertices)))
 
 
-def dfs_list(list, nr_verticies, visited, start_vi, stack):
+def dfs_list(adjList, visited, start_vi, stack):
+    """
+    Perform DFS on AdjList
+    :param adjList: Adjacency List
+    :param visited: Boolean list of visit info for each vertex. Must be init to all False at 1st call
+    :param start_vi: Index of vertex to start DFS
+    :param stack: Data structure to save DFS order
+    :return: DFS order of vertices
+    """
     visited[start_vi] = True
-    entity = list[start_vi].next
+    entity = adjList.list[start_vi].next
 
     """
     Core logic
@@ -106,7 +133,7 @@ def dfs_list(list, nr_verticies, visited, start_vi, stack):
     """
     while entity is not None:
         if visited[entity.val] == 0:
-            dfs_list(list, nr_verticies, visited, entity.val, stack)
+            dfs_list(adjList, visited, entity.val, stack)
         entity = entity.next
 
     stack.append(start_vi)
@@ -180,7 +207,15 @@ class AdjArray:
 
             print("{}: {}".format(j, "->".join(list)))
 
-def dfs_array(adjArray, nr_verticies, visited, start_vi, stack):
+def dfs_array(adjArray, visited, start_vi, stack):
+    """
+    Perform DFS on AdjArray
+    :param adjArray: Adjacency array
+    :param visited: Boolean list of visit info for each vertex. Must be init to all False at 1st call
+    :param start_vi: Index of vertex to start DFS
+    :param stack: Data structure to save DFS order
+    :return: DFS order of vertices
+    """
     visited[start_vi] = True
 
     fr = adjArray.pos_list[start_vi - 1] + 1
@@ -189,7 +224,7 @@ def dfs_array(adjArray, nr_verticies, visited, start_vi, stack):
     for i in range(fr, to+1):
         vi = adjArray.array[i]
         if visited[vi] == 0:
-            dfs_array(adjArray, nr_verticies, visited, vi, stack)
+            dfs_array(adjArray, visited, vi, stack)
 
     stack.append(start_vi)
 
@@ -236,10 +271,10 @@ if __name__ == "__main__":
 
         while not all(visited):
             start_vi = visited.index(False)
-            dfs_matrix(adj_matrix.matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
+            dfs_matrix(adj_matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
         # print("Adj matrix stack", stack)
 
-        g_r = adj_matrix.matrix.T
+        g_r = adj_matrix.transpose()
         f = stack.copy()
 
         visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
@@ -261,12 +296,9 @@ if __name__ == "__main__":
 
         while not all(visited):
             start_vi = visited.index(False)
-            dfs_list(adj_list.list, adj_list.nr_vertices, visited, start_vi, stack)
+            dfs_list(adj_list, visited, start_vi, stack)
 
         g_r = adj_list.transpose()
-
-        # print("Transposed adj list")
-        # g_r.print()
         f = stack.copy()
 
         visited = [False for _ in range(adj_list.nr_vertices + 1)]
@@ -277,25 +309,22 @@ if __name__ == "__main__":
             if start_vi == 0:
                 break
             if visited[start_vi] is False:
-                tree = dfs_list(g_r.list, adj_list.nr_vertices, visited, start_vi, stack)
+                tree = dfs_list(g_r, visited, start_vi, stack)
                 print(tree)
                 stack = []
 
         # 3. adj_array
         print("\n[Result] Adj array")
-        # print("Adj array position ", adj_array.pos_list)
-        # print("Adj array vanilla ", adj_array.array)
+
         visited = [False for _ in range(adj_list.nr_vertices + 1)]
         stack = []
 
         while not all(visited):
             start_vi = visited.index(False)
-            dfs_array(adj_array, adj_array.nr_vertices, visited, start_vi, stack)
+            dfs_array(adj_array, visited, start_vi, stack)
 
         # print("Adj array stack", stack)
         g_r = adj_array.transpose()
-        # print("Transposed adj array")
-        # g_r.print()
         f = stack.copy()
 
         visited = [False for _ in range(adj_list.nr_vertices + 1)]
@@ -306,6 +335,6 @@ if __name__ == "__main__":
             if start_vi == 0:
                 break
             if visited[start_vi] is False:
-                tree = dfs_array(g_r, adj_array.nr_vertices, visited, start_vi, stack)
+                tree = dfs_array(g_r, visited, start_vi, stack)
                 print(tree)
                 stack = []
