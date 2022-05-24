@@ -26,6 +26,19 @@ class AdjMatrix:
         print(self.matrix)
 
 
+def dfs_matrix(matrix, nr_verticies, visited, start_vi, stack):
+    visited[start_vi] = True
+
+    for vi in range(STARTING_VERTEX, nr_verticies+1):
+        """" Recurse on adjacent && unvisited nodes """
+        if visited[vi] is False and matrix[start_vi][vi] == 1:
+            dfs_matrix(matrix, nr_verticies, visited, vi, stack)
+
+    stack.append(start_vi)
+
+    return stack
+
+
 class AdjList:
     def __init__(self, nrv: int):
         """
@@ -139,7 +152,34 @@ if __name__ == "__main__":
 
             vi = vi + 1
 
-        adj_matrix.print()
-        adj_list.print()
-        adj_array.print()
+        """ Print graph representations """
+        # adj_matrix.print()
+        # adj_list.print()
+        # adj_array.print()
+
+        """ Get results """
+        # 1. adj_matrix
+        print("[Result] Adj Matrix")
+        visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = visited.index(False)
+            dfs_matrix(adj_matrix.matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
+        # print("Adj matrix stack", stack)
+
+        g_r = adj_matrix.matrix.T
+        f = stack.copy()
+
+        visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = f.pop()
+            if start_vi == 0:
+                break
+            if visited[start_vi] is False:
+                tree = dfs_matrix(g_r, adj_matrix.nr_vertices, visited, start_vi, stack)
+                print(tree)
+                stack = []
 
