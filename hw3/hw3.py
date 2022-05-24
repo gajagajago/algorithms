@@ -68,6 +68,21 @@ class AdjList:
 
         curr.next = e
 
+    def transpose(self):
+        """
+        Transpose adjacency list
+        :return: Transposed list
+        """
+        adj_list_t = AdjList(self.nr_vertices)
+
+        for vi in range(STARTING_VERTEX, self.nr_vertices+1):
+            entity = self.list[vi].next
+            while entity is not None:
+                adj_list_t.addEntity(entity.val, ListEntity(vi))
+                entity = entity.next
+
+        return adj_list_t
+
     def print(self):
         print("<<Adj List>>")
 
@@ -79,6 +94,24 @@ class AdjList:
                 adjacent_vertices.append(str(entity.val))
                 entity = entity.next
             print("{}: {}".format(j, "->".join(adjacent_vertices)))
+
+
+def dfs_list(list, nr_verticies, visited, start_vi, stack):
+    visited[start_vi] = True
+    entity = list[start_vi].next
+
+    """
+    Core logic
+    While traversing adjacent nodes from start_vi, should not break but just continue if a node is visited
+    """
+    while entity is not None:
+        if visited[entity.val] == 0:
+            dfs_list(list, nr_verticies, visited, entity.val, stack)
+        entity = entity.next
+
+    stack.append(start_vi)
+
+    return stack
 
 
 class AdjArray:
@@ -154,7 +187,7 @@ if __name__ == "__main__":
 
         """ Print graph representations """
         # adj_matrix.print()
-        # adj_list.print()
+        adj_list.print()
         # adj_array.print()
 
         """ Get results """
@@ -183,3 +216,27 @@ if __name__ == "__main__":
                 print(tree)
                 stack = []
 
+        # 2. adj_list
+        print("[Result] Adj List")
+        visited = [False for _ in range(adj_list.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = visited.index(False)
+            dfs_list(adj_list.list, adj_list.nr_vertices, visited, start_vi, stack)
+
+        g_r = adj_list.transpose()
+        # g_r.print()
+        f = stack.copy()
+
+        visited = [False for _ in range(adj_list.nr_vertices + 1)]
+        stack = []
+
+        while not all(visited):
+            start_vi = f.pop()
+            if start_vi == 0:
+                break
+            if visited[start_vi] is False:
+                tree = dfs_list(g_r.list, adj_list.nr_vertices, visited, start_vi, stack)
+                print(tree)
+                stack = []
