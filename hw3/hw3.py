@@ -1,6 +1,16 @@
 import numpy as np
+import sys
+from enum import Enum
+from time import time
 
 STARTING_VERTEX = 1
+GRAPH_REPS = ["adj_matrix", "adj_list", "adj_array"]
+
+
+class Mode(Enum):
+    adj_matrix = 0
+    adj_list = 1
+    adj_array = 2
 
 
 class ListEntity:
@@ -10,7 +20,7 @@ class ListEntity:
 
     def isTail(self):
         return self.next is None
-    
+
 
 class AdjMatrix:
     def __init__(self, nrv: int):
@@ -48,7 +58,7 @@ def dfs_matrix(adjMatrix, nr_vertices, visited, start_vi, stack):
     """
     visited[start_vi] = True
 
-    for vi in range(STARTING_VERTEX, nr_vertices+1):
+    for vi in range(STARTING_VERTEX, nr_vertices + 1):
         """" Recurse on adjacent && unvisited nodes """
         if visited[vi] is False and adjMatrix.matrix[start_vi][vi] == 1:
             dfs_matrix(adjMatrix, nr_vertices, visited, vi, stack)
@@ -94,7 +104,7 @@ class AdjList:
         """
         adj_list_t = AdjList(self.nr_vertices)
 
-        for vi in range(STARTING_VERTEX, self.nr_vertices+1):
+        for vi in range(STARTING_VERTEX, self.nr_vertices + 1):
             entity = self.list[vi].next
             while entity is not None:
                 adj_list_t.addEntity(entity.val, ListEntity(vi))
@@ -105,7 +115,7 @@ class AdjList:
     def print(self):
         print("<<Adj List>>")
 
-        for j in range(STARTING_VERTEX, self.nr_vertices+1):
+        for j in range(STARTING_VERTEX, self.nr_vertices + 1):
             adjacent_vertices = []
             entity = self.list[j].next
 
@@ -149,7 +159,7 @@ class AdjArray:
         :param nrv: Number of vertices
         """
         self.nr_vertices = nrv
-        self.pos_list = [0 for _ in range(nrv+1)]
+        self.pos_list = [0 for _ in range(nrv + 1)]
         self.array = [0]
 
     def addEntity(self, vi, val):
@@ -158,7 +168,7 @@ class AdjArray:
         :param vi: Vertex number
         :param val: Value to be added
         """
-        for i in range(vi, self.nr_vertices+1):
+        for i in range(vi, self.nr_vertices + 1):
             self.pos_list[i] = self.pos_list[i] + 1
 
         fr = self.pos_list[vi - 1] + 1
@@ -182,11 +192,11 @@ class AdjArray:
         """
         adj_array_t = AdjArray(self.nr_vertices)
 
-        for start_vi in range(STARTING_VERTEX, self.nr_vertices+1):
+        for start_vi in range(STARTING_VERTEX, self.nr_vertices + 1):
             fr = self.pos_list[start_vi - 1] + 1
             to = self.pos_list[start_vi]
             # print("fr: {} to: {}".format(fr, to))
-            for i in range(fr, to+1):
+            for i in range(fr, to + 1):
                 vi = self.array[i]
                 # print("start_vi: %d vi: %d" % (start_vi, vi))
 
@@ -196,16 +206,16 @@ class AdjArray:
 
         return adj_array_t
 
-
     def print(self):
         print("<<Adj Array>>")
 
-        for j in range(STARTING_VERTEX, self.nr_vertices+1):
-            n = self.pos_list[j] - self.pos_list[j-1]
-            list = self.array[self.pos_list[j]-n+1: self.pos_list[j]+1]
+        for j in range(STARTING_VERTEX, self.nr_vertices + 1):
+            n = self.pos_list[j] - self.pos_list[j - 1]
+            list = self.array[self.pos_list[j] - n + 1: self.pos_list[j] + 1]
             list = [str(li) for li in list]
 
             print("{}: {}".format(j, "->".join(list)))
+
 
 def dfs_array(adjArray, visited, start_vi, stack):
     """
@@ -221,7 +231,7 @@ def dfs_array(adjArray, visited, start_vi, stack):
     fr = adjArray.pos_list[start_vi - 1] + 1
     to = adjArray.pos_list[start_vi]
 
-    for i in range(fr, to+1):
+    for i in range(fr, to + 1):
         vi = adjArray.array[i]
         if visited[vi] == 0:
             dfs_array(adjArray, visited, vi, stack)
@@ -232,16 +242,23 @@ def dfs_array(adjArray, visited, start_vi, stack):
 
 
 if __name__ == "__main__":
-    # Fill in the directory where input.txt is located
-    dir = "./input/"
+    """ Parse command line arguments """
+    input_path, output_path, graph_rep = sys.argv[1:]
+    if graph_rep not in GRAPH_REPS:
+        raise Exception("Invalid graph representation")
+    else:
+        mode = Mode[graph_rep]
 
-    with open(dir + "input.txt", "r") as f_in:
+    with open(input_path, "r") as f_in:
         nr_vertices = int(f_in.readline())
 
-        """ Setup global data structures """
-        adj_matrix = AdjMatrix(nr_vertices)
-        adj_list = AdjList(nr_vertices)
-        adj_array = AdjArray(nr_vertices)
+        """ Setup global data structure """
+        if mode is Mode.adj_matrix:
+            adj_matrix = AdjMatrix(nr_vertices)
+        elif mode is Mode.adj_list:
+            adj_list = AdjList(nr_vertices)
+        elif mode is Mode.adj_array:
+            adj_array = AdjArray(nr_vertices)
 
         lines = f_in.readlines()
         vi = STARTING_VERTEX
@@ -252,89 +269,122 @@ if __name__ == "__main__":
 
             if nr_v is not 0:
                 for v in v_list:
-                    adj_matrix.matrix[vi][v] = 1
-                    adj_list.addEntity(vi, ListEntity(v))
-                    adj_array.addEntity(vi, v)
+                    if mode is Mode.adj_matrix:
+                        adj_matrix.matrix[vi][v] = 1
+                    elif mode is Mode.adj_list:
+                        adj_list.addEntity(vi, ListEntity(v))
+                    elif mode is Mode.adj_array:
+                        adj_array.addEntity(vi, v)
 
             vi = vi + 1
 
         """ Print graph representations """
-        # adj_matrix.print()
-        # adj_list.print()
-        # adj_array.print()
+        # if mode is Mode.adj_matrix:
+        #     adj_matrix.print()
+        # elif mode is Mode.adj_list:
+        #     adj_list.print()
+        # elif mode is Mode.adj_array:
+        #     adj_array.print()
 
         """ Get results """
+        t_start = time()
+        t_end = None
+        scc_list = []
+
         # 1. adj_matrix
-        print("[Result] Adj Matrix")
-        visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
-        stack = []
+        if mode is Mode.adj_matrix:
+            visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
+            stack = []
 
-        while not all(visited):
-            start_vi = visited.index(False)
-            dfs_matrix(adj_matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
-        # print("Adj matrix stack", stack)
+            while not all(visited):
+                start_vi = visited.index(False)
+                dfs_matrix(adj_matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
+            # print("Adj matrix stack", stack)
 
-        g_r = adj_matrix.transpose()
-        f = stack.copy()
+            g_r = adj_matrix.transpose()
+            f = stack.copy()
 
-        visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
-        stack = []
+            visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
+            stack = []
 
-        while not all(visited):
-            start_vi = f.pop()
-            if start_vi == 0:
-                break
-            if visited[start_vi] is False:
-                tree = dfs_matrix(g_r, adj_matrix.nr_vertices, visited, start_vi, stack)
-                print(tree)
-                stack = []
+            while not all(visited):
+                start_vi = f.pop()
+                if start_vi == 0:
+                    break
+                if visited[start_vi] is False:
+                    tree = dfs_matrix(g_r, adj_matrix.nr_vertices, visited, start_vi, stack)
+                    scc_list.append(tree)
+                    stack = []
+
+            """ Record time """
+            t_end = time()
+
 
         # 2. adj_list
-        print("\n[Result] Adj List")
-        visited = [False for _ in range(adj_list.nr_vertices + 1)]
-        stack = []
+        elif mode is Mode.adj_list:
+            visited = [False for _ in range(adj_list.nr_vertices + 1)]
+            stack = []
 
-        while not all(visited):
-            start_vi = visited.index(False)
-            dfs_list(adj_list, visited, start_vi, stack)
+            while not all(visited):
+                start_vi = visited.index(False)
+                dfs_list(adj_list, visited, start_vi, stack)
 
-        g_r = adj_list.transpose()
-        f = stack.copy()
+            g_r = adj_list.transpose()
+            f = stack.copy()
 
-        visited = [False for _ in range(adj_list.nr_vertices + 1)]
-        stack = []
+            visited = [False for _ in range(adj_list.nr_vertices + 1)]
+            stack = []
 
-        while not all(visited):
-            start_vi = f.pop()
-            if start_vi == 0:
-                break
-            if visited[start_vi] is False:
-                tree = dfs_list(g_r, visited, start_vi, stack)
-                print(tree)
-                stack = []
+            while not all(visited):
+                start_vi = f.pop()
+                if start_vi == 0:
+                    break
+                if visited[start_vi] is False:
+                    tree = dfs_list(g_r, visited, start_vi, stack)
+                    scc_list.append(tree)
+                    stack = []
+
+            """ Record time """
+            t_end = time()
 
         # 3. adj_array
-        print("\n[Result] Adj array")
+        elif mode is Mode.adj_array:
+            visited = [False for _ in range(adj_array.nr_vertices + 1)]
+            stack = []
 
-        visited = [False for _ in range(adj_list.nr_vertices + 1)]
-        stack = []
+            while not all(visited):
+                start_vi = visited.index(False)
+                dfs_array(adj_array, visited, start_vi, stack)
 
-        while not all(visited):
-            start_vi = visited.index(False)
-            dfs_array(adj_array, visited, start_vi, stack)
+            g_r = adj_array.transpose()
+            f = stack.copy()
 
-        # print("Adj array stack", stack)
-        g_r = adj_array.transpose()
-        f = stack.copy()
+            visited = [False for _ in range(adj_array.nr_vertices + 1)]
+            stack = []
 
-        visited = [False for _ in range(adj_list.nr_vertices + 1)]
-        stack = []
+            while not all(visited):
+                start_vi = f.pop()
+                if start_vi == 0:
+                    break
+                if visited[start_vi] is False:
+                    tree = dfs_array(g_r, visited, start_vi, stack)
+                    scc_list.append(tree)
+                    stack = []
 
-        while not all(visited):
-            start_vi = f.pop()
-            if start_vi == 0:
-                break
-            if visited[start_vi] is False:
-                tree = dfs_array(g_r, visited, start_vi, stack)
-                print(tree)
-                stack = []
+            """ Record time"""
+            t_end = time()
+
+        """ Write to output """
+        for i in range(0, len(scc_list)):
+            scc = scc_list[i]
+            scc.sort()
+            scc_list[i] = " ".join(map(str, scc))
+
+        scc_list.sort()
+
+        with open(output_path, "w") as f_out:
+            for scc in scc_list:
+                f_out.write(scc + "\n")
+
+            milliseconds = (t_end - t_start) * 1000
+            f_out.write("{}ms".format(milliseconds))
