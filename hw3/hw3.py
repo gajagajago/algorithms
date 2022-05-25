@@ -185,7 +185,6 @@ class AdjArray:
 
         if to == fr:
             self.array.insert(to, val)
-            # self.array.x(val)
         else:
             idx = to
             for j in range(fr, to):
@@ -204,14 +203,10 @@ class AdjArray:
         for start_vi in range(STARTING_VERTEX, self.nr_vertices + 1):
             fr = self.pos_list[start_vi - 1] + 1
             to = self.pos_list[start_vi]
-            # print("fr: {} to: {}".format(fr, to))
+
             for i in range(fr, to + 1):
                 vi = self.array[i]
-                # print("start_vi: %d vi: %d" % (start_vi, vi))
-
                 adj_array_t.addEntity(vi, start_vi)
-
-            # adj_array_t.print()
 
         return adj_array_t
 
@@ -384,7 +379,7 @@ if __name__ == "__main__":
             """ Record time"""
             t_end = time()
 
-        """ Write to output """
+        """ Save results """
         for i in range(0, len(scc_list)):
             scc = scc_list[i]
             scc.sort()
@@ -393,9 +388,13 @@ if __name__ == "__main__":
         scc_list.sort()
 
         with open(output_path, "w") as f_out:
+            """ Print the found scc to output path """
             for scc in scc_list:
                 f_out.write(scc + "\n")
 
+            """ Print elapsed time to output path """
             milliseconds = int((t_end - t_start) * 1000)
             f_out.write("{}ms".format(milliseconds))
+
+            """ Print elapsed time to terminal """
             print("{}ms".format(milliseconds))
