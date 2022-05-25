@@ -4,13 +4,14 @@ from enum import Enum
 from time import time
 
 STARTING_VERTEX = 1
-GRAPH_REPS = ["adj_matrix", "adj_list", "adj_array"]
+GRAPH_REPS = ["adj_mat", "adj_list", "adj_arr"]
+RECURSION_LIMIT = 10**6
 
 
 class Mode(Enum):
-    adj_matrix = 0
+    adj_mat = 0
     adj_list = 1
-    adj_array = 2
+    adj_arr = 2
 
 
 class ListEntity:
@@ -30,6 +31,14 @@ class AdjMatrix:
         """
         self.matrix = np.zeros((nrv + 1, nrv + 1), dtype=int)
         self.nr_vertices = nrv
+
+    def addEntity(self, vi, v):
+        """
+        Add edge on AdjMatrix
+        :param vi: Edge starting vertex
+        :param v: Edge destination vertex
+        """
+        self.matrix[vi][v] = 1
 
     def transpose(self):
         """
@@ -242,6 +251,9 @@ def dfs_array(adjArray, visited, start_vi, stack):
 
 
 if __name__ == "__main__":
+    """ System settings """
+    sys.setrecursionlimit(RECURSION_LIMIT)
+
     """ Parse command line arguments """
     input_path, output_path, graph_rep = sys.argv[1:]
     if graph_rep not in GRAPH_REPS:
@@ -253,11 +265,11 @@ if __name__ == "__main__":
         nr_vertices = int(f_in.readline())
 
         """ Setup global data structure """
-        if mode is Mode.adj_matrix:
+        if mode is Mode.adj_mat:
             adj_matrix = AdjMatrix(nr_vertices)
         elif mode is Mode.adj_list:
             adj_list = AdjList(nr_vertices)
-        elif mode is Mode.adj_array:
+        elif mode is Mode.adj_arr:
             adj_array = AdjArray(nr_vertices)
 
         lines = f_in.readlines()
@@ -269,21 +281,21 @@ if __name__ == "__main__":
 
             if nr_v is not 0:
                 for v in v_list:
-                    if mode is Mode.adj_matrix:
-                        adj_matrix.matrix[vi][v] = 1
+                    if mode is Mode.adj_mat:
+                        adj_matrix.addEntity(vi, v)
                     elif mode is Mode.adj_list:
                         adj_list.addEntity(vi, ListEntity(v))
-                    elif mode is Mode.adj_array:
+                    elif mode is Mode.adj_arr:
                         adj_array.addEntity(vi, v)
 
             vi = vi + 1
 
         """ Print graph representations """
-        # if mode is Mode.adj_matrix:
+        # if mode is Mode.adj_mat:
         #     adj_matrix.print()
         # elif mode is Mode.adj_list:
         #     adj_list.print()
-        # elif mode is Mode.adj_array:
+        # elif mode is Mode.adj_arr:
         #     adj_array.print()
 
         """ Get results """
@@ -292,14 +304,13 @@ if __name__ == "__main__":
         scc_list = []
 
         # 1. adj_matrix
-        if mode is Mode.adj_matrix:
+        if mode is Mode.adj_mat:
             visited = [False for _ in range(adj_matrix.nr_vertices + 1)]
             stack = []
 
             while not all(visited):
                 start_vi = visited.index(False)
                 dfs_matrix(adj_matrix, adj_matrix.nr_vertices, visited, start_vi, stack)
-            # print("Adj matrix stack", stack)
 
             g_r = adj_matrix.transpose()
             f = stack.copy()
@@ -318,7 +329,6 @@ if __name__ == "__main__":
 
             """ Record time """
             t_end = time()
-
 
         # 2. adj_list
         elif mode is Mode.adj_list:
@@ -348,7 +358,7 @@ if __name__ == "__main__":
             t_end = time()
 
         # 3. adj_array
-        elif mode is Mode.adj_array:
+        elif mode is Mode.adj_arr:
             visited = [False for _ in range(adj_array.nr_vertices + 1)]
             stack = []
 
@@ -386,5 +396,6 @@ if __name__ == "__main__":
             for scc in scc_list:
                 f_out.write(scc + "\n")
 
-            milliseconds = (t_end - t_start) * 1000
+            milliseconds = int((t_end - t_start) * 1000)
             f_out.write("{}ms".format(milliseconds))
+            print("{}ms".format(milliseconds))
